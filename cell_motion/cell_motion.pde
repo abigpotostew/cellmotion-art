@@ -1,7 +1,8 @@
 int WIDTH, HEIGHT;
 Cells cells;
-OptFlow flow;
-volatile PVector[][] buffer;
+//OptFlow flow;
+
+ICellMotion motion;
 
 final float minFlowDistance = 3;
 
@@ -10,7 +11,6 @@ Movie myMovie;
 
 PImage opticalSource;
 
-Thread calcThread;
 
 final static PVector ONE = new PVector(1,1);
 final static PVector ZERO = new PVector(0,0);
@@ -30,7 +30,8 @@ void setup(){
   WIDTH=width; HEIGHT=height;
   cells = new Cells(WIDTH,HEIGHT, 3);
   cells.setRules(rules);
-  flow = new OptFlow (this,WIDTH,HEIGHT);
+  
+  
   
    video = new Capture(this, WIDTH,HEIGHT);
    video.start();
@@ -40,59 +41,19 @@ void setup(){
    opticalSource = myMovie;*/
   
 
-  buffer = flow.buildFlowBuffer();
-  
-  //init buffer for debug
-  /*for(int y=0;y<buffer.length;++y){
-    for(int x=0;x<buffer[y].length;++x){
-      buffer[y][x] = new PVector();
-      if (y<100 || x<100 || y > 500 || x > 500){
-        buffer[y][x].set(100,100);
-      }
-    }
-  }*/
+  motion = new OptFlow (this,WIDTH,HEIGHT);
+  motion.setup(this,cells, opticalSource);
+    
   
   
-  calcThread = new Thread()
-  {
-    public void run() {
-      while(true){
-        flow.calculate (buffer, opticalSource);
-        synchronized(cells){
-          setCellsToFlow (buffer, cells); //syncronized
-        }
-        if (Thread.interrupted()) {
-          println("end thread");
-          return;
-        }
-      }
-    }
-  };
-  calcThread.start();
 }
 
-void nonSynchronizedDraw(){
-  //ccimage(video,0,0);
-  
-  cells.update();
-  flow.calculate (buffer,opticalSource);
-  setCellsToFlow (buffer, cells);
-  cells.draw();
-}
 
-void synchronizedDraw(){
-  synchronized(cells){
-    cells.update();
-    setCellsToFlow(buffer,cells);
-    cells.draw();
-  }
-}
 
 void draw(){
   background(0);
   
-  synchronizedDraw();
-  //nonSynchronizedDraw();
+  motion.draw (this, cells, opticalSource);
   
   /*synchronized(cells){ //debug draw
     stroke(255,0,0);
@@ -113,21 +74,7 @@ void draw(){
   /////flow.debugDraw(myMovie);
 }
 
-void setCellsToFlow(PVector[][] flowBuffer, Cells cells){
-    final int w = flowBuffer.length, h = flowBuffer[0].length;
-    final int stepSize = 3;
-    float f;
-    for (int y = 0; y < h; y+=stepSize) {
-      for (int x = 0; x < w; x+=stepSize) {
-        if(flowBuffer[y][x]==null) return;
-        f = len2 (flowBuffer[y][x]);
-        if ( f > minFlowDistance){
-          cells.setCellAlive (x,y);
-          //println(f);
-        }
-      }
-    }
-}
+
 
 
 void captureEvent(Capture c) {
@@ -140,9 +87,8 @@ void movieEvent(Movie m) {
 
 
 void stop(){
-  calcThread.interrupt();
-  flow.stop();
-  
+  //flow.stop();
+  motion.stop(this);
 }
 
 float len2(PVector p){

@@ -32,16 +32,21 @@ void setup(){
   cells.setRules(rules);
   
   
-  
-   video = new Capture(this, WIDTH,HEIGHT);
-   video.start();
-   opticalSource = video;
-   /*myMovie = new Movie(this, "street.mov");
-   myMovie.loop();
-   opticalSource = myMovie;*/
+   if(false){
+     video = new Capture(this, WIDTH,HEIGHT);
+     video.start();
+     opticalSource = video;
+   } else{
+   
+     myMovie = new Movie(this, "street.mov");
+     myMovie.loop();
+     opticalSource = myMovie;
+   }
   
 
-  motion = new OptFlow (this,WIDTH,HEIGHT);
+  //motion = new OptFlow (this,WIDTH,HEIGHT);
+  motion = new BGDiff (this,WIDTH,HEIGHT);
+  
   motion.setup(this,cells, opticalSource);
     
   
@@ -51,7 +56,8 @@ void setup(){
 
 
 void draw(){
-  background(0);
+  surface.setTitle("FPS: "+frameRate);
+  
   
   motion.draw (this, cells, opticalSource);
   

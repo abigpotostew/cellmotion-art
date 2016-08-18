@@ -29,6 +29,15 @@ int ruleBankIdx=0;
     randomRule();
   }
   
+  public int getLifesize(){
+    return this.lifeSize;
+  }
+  
+  public int getCellSize(){
+    return this.cellSize;
+  }
+  
+  
   public void setCellAlive(PVector pos){
     setCellAlive ( (int)pos.x, (int)pos.y);
   }

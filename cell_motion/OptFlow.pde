@@ -83,31 +83,13 @@ class OptFlow implements ICellMotion{
       calcThread.interrupt();
     }
     
-    public void setup(PApplet pa, Cells c, PImage source){
-      
+    public void setup(PApplet pa, Cells c, PImage source)
+    {
       this.buffer = this.buildFlowBuffer();
       
       calcThread = new Thread(new OptFlowRunnable(this, source, c));
-      
-      /*new Thread()
-      {
-        public void run() {
-          while(true){
-            calculate (((OptFlow)motion).buffer, opticalSource);
-            synchronized(cells){
-            setCellsToFlow (((OptFlow)motion).buffer, cells); //syncronized
-          }
-          if (Thread.interrupted()) {
-            println("end thread");
-            return;
-          }
-        }
-      }
-    };*/
-    calcThread.start();
-    
-    
-  }
+      calcThread.start();
+    }
   
   class OptFlowRunnable implements Runnable{
     OptFlow oflow;

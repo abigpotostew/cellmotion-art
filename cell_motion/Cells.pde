@@ -29,10 +29,12 @@ int ruleBankIdx=0;
     randomRule();
   }
   
+  //num cells across
   public int getLifesize(){
     return this.lifeSize;
   }
   
+  //pixel size of a cell
   public int getCellSize(){
     return this.cellSize;
   }
@@ -59,11 +61,16 @@ int ruleBankIdx=0;
   }
   
    public void setCellAlive(int x, int y){
+    setCell(x,y,1);
+  }
+  
+  //x,y in pixels
+  public void setCell(int x, int y, int state){
     x = floor(x / cellSize);
     y = floor(y / cellSize);
     if ( x < lifeSize && x > 0 && y < lifeSize && y > 0 ){
-      if ( world[y][x] != 1 )
-        world[y][x] = 1;
+      if ( world[y][x] != state )
+        world[y][x] = state;
     }
   }
   

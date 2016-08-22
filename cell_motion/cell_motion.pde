@@ -1,6 +1,5 @@
 int WIDTH, HEIGHT;
 Cells cells;
-//OptFlow flow;
 
 ICellMotion motion;
 
@@ -10,7 +9,6 @@ Capture video;
 Movie myMovie;
 
 PImage opticalSource;
-
 
 final static PVector ONE = new PVector(1,1);
 final static PVector ZERO = new PVector(0,0);
@@ -32,7 +30,7 @@ void setup(){
   cells.setRules(rules);
   
   
-   if(false){
+   if(true){
      video = new Capture(this, WIDTH,HEIGHT);
      video.start();
      opticalSource = video;
@@ -80,7 +78,10 @@ void draw(){
   /////flow.debugDraw(myMovie);
 }
 
-
+public int averageBrightnessAt (int x, int y){
+  color cc = this.get (x,y);
+  return ((cc >> 16 & 0xFF) + (cc >> 8 & 0xFF) + (cc & 0xFF))/3;
+}
 
 
 void captureEvent(Capture c) {

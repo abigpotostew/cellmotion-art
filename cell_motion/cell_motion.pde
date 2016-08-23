@@ -43,7 +43,8 @@ void setup(){
   
 
   //motion = new OptFlow (this,WIDTH,HEIGHT);
-  motion = new BGDiff (this,WIDTH,HEIGHT);
+  //motion = new BGDiff (this,WIDTH,HEIGHT);
+  motion = new KinectCell (this,WIDTH,HEIGHT);
   
   motion.setup(this,cells, opticalSource);
     

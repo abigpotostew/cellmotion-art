@@ -6,15 +6,15 @@ import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 //import java.io.IOException;
 
-void writeKinectFrame(FloatBuffer depthPositions){
-  //File file = new File("depth.data");
-  //createPath(file);
-  //;
+void writeKinectFrame(FloatBuffer depthPositions, boolean appendMode){
+
   String file = savePath("depth.data");
-  //FileOutputStream fos = openFile(file);
   println(file);
+  
   try{
-    DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(openFile(file)));
+    DataOutputStream dos = new DataOutputStream(
+                             new BufferedOutputStream(
+                               new FileOutputStream(file, appendMode) ) );
     depthPositions.rewind();
     float v;
     float max=0, min=100000.0;
@@ -27,27 +27,16 @@ void writeKinectFrame(FloatBuffer depthPositions){
       //output.print (v);
       dos.writeFloat(v);
     }
+    //dos.writeFloat(Float.NaN);
+    
     dos.flush();
     dos.close();
     println("Max:", max, "Min:", min);
-    exit(); 
+    //exit(); 
   }catch(IOException e){
     System.out.println("IOException : " + e);
-      exit();
+      //exit();
   }
-}
-
-FileOutputStream openFile(String path){
-  try
-    {
-      return new FileOutputStream(path);
-  }
-    catch (IOException e)
-    {
-      System.out.println("IOException : " + e);
-      exit();
-    }
-    return null;
 }
 
 void readKinectFrame(){

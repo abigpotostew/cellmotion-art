@@ -32,6 +32,7 @@ int colorLoc;
 
 final int DRAW =0, ADJUSTING = 1;
 int state = DRAW;
+boolean hasWritten = false;
 
 //float[][] tmpBuffer;
 float[] depthTmpBuffer;
@@ -118,7 +119,8 @@ void draw() {
     depthPositions.put(depthTmpBuffer);
     depthPositions.rewind();
     if(keyPressed && key=='w'){
-      writeKinectFrame(depthPositions);
+      writeKinectFrame(depthPositions,hasWritten);
+       hasWritten = true;
     }
   }
    
@@ -141,7 +143,6 @@ void draw() {
   pgl.enableVertexAttribArray(colorLoc);
   
   int vertData = kinect2.depthWidth * kinect2.depthHeight;
-  println("YOOO",kinect2.depthWidth, kinect2.depthHeight);
 
   //vertex
   {
@@ -239,5 +240,9 @@ void keyPressed() {
   
   if (key=='w'){
     //writeKinectFrame(kinect2.getDepthBufferPositions());
+  }
+  
+  if (key=='q'){
+    exit();
   }
 }

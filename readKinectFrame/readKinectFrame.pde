@@ -1,9 +1,4 @@
 // Thomas Sanchez Lengeling
-// Kinect 3d Point Cloud example with different color types.
-
-// https://github.com/shiffman/OpenKinect-for-Processing
-// http://shiffman.net/p5/kinect/
-
 import java.nio.*;
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
@@ -25,16 +20,14 @@ PShader sh;
 
 //VBO buffer location in the GPU
 int vertexVboId;
-int colorVboId;
 
 int vertLoc;
 
 FloatBuffer depthPositions;
+FloatBuffer[] depthPositionsMulti;
 
 void setup() {
   size(900, 700, P3D);
-
-
 
   //start shader
   //shader usefull to add post-render effects to the point cloud
@@ -54,16 +47,56 @@ void setup() {
 
   endPGL();
   
-   depthPositions = readKinectFrame(sketchPath()+"/data/"+"depth.data");
+   //depthPositions = readKinectFrame(sketchPath()+"/data/"+"depth_multi.data");
+   depthPositionsMulti = readKinectFrameMulti(sketchPath()+"/data/"+"depth_multi.data");
+}
+
+ArrayList<float[]> readKinectFrameRawMulti(String absPath){
+  ArrayList<float[]> frames = new ArrayList<float[]>();
+  float f;
+  
+  try{
+    DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(absPath)));
+    
+    while(in.available()>0){
+      int i=0;
+      float[] raw = new float[512*424*3];
+      f = in.readFloat();
+      while (in.available()>0 && i<raw.length){
+        raw[i++]=f;
+        f=in.readFloat();
+      }
+      frames.add(raw);
+    }
+  } catch(IOException e){
+    System.out.println("IOException : " + e);
+    exit();
+  }
+  return frames;
+}
+
+FloatBuffer[] readKinectFrameMulti(String absPath){
+  ArrayList<float[]> frames = readKinectFrameRawMulti(absPath);
+  FloatBuffer[] out = new FloatBuffer[frames.size()];
+  int i=0;
+  for(float[] frame:frames){
+    out[i] = FloatBuffer.allocate(frame.length);
+    out[i].put(frame);
+  }
+  return out;
 }
 
 float[] readKinectFrameRaw(String absPath){
   float[] raw = new float[512*424*3];
+  
   try{
     DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(absPath)));
     int i=0;
-    while(in.available()>0){
-      raw[i++]=in.readFloat();
+    float f;
+    while(in.available()>0 && i<raw.length){
+      f = in.readFloat();
+      //if (f==Float.NaN) break;
+      raw[i++] = f;
     }
   } catch(IOException e){
     System.out.println("IOException : " + e);
@@ -80,6 +113,8 @@ FloatBuffer readKinectFrame(String absPath){
   return out;
 }
 
+
+
 void draw() {
   
   background(0);
@@ -92,11 +127,6 @@ void draw() {
   //rotateZ(HALF_PI);
   
   stroke(255);
-
-  //obtain the XYZ camera positions based on the depth data
-  
-   
-  
 
   pgl = beginPGL();
   sh.bind();
@@ -113,7 +143,7 @@ void draw() {
   {
     pgl.bindBuffer(PGL.ARRAY_BUFFER, vertexVboId);
     // fill VBO with data
-    pgl.bufferData(PGL.ARRAY_BUFFER, Float.BYTES * vertData * 3, depthPositions, PGL.DYNAMIC_DRAW);
+    pgl.bufferData(PGL.ARRAY_BUFFER, Float.BYTES * vertData * 3, depthPositionsMulti[frameCount%depthPositionsMulti.length], PGL.DYNAMIC_DRAW);
     // associate currently bound VBO with shader attribute
     pgl.vertexAttribPointer(vertLoc, 3, PGL.FLOAT, false, Float.BYTES * 3, 0);
   }
@@ -159,12 +189,4 @@ void draw() {
   }
     
   }
-}
-
-
-void keyPressed() {
-
-
-  
-  
 }

@@ -38,7 +38,7 @@ float[] depthTmpBuffer;
 //float[] depthTmpBuffer2;
 
 void setup() {
-  size(800, 600, P3D);
+  size(900, 700, P3D);
 
   kinect2 = new Kinect2(this);
   // Start all data
@@ -81,10 +81,15 @@ void draw() {
   background(0);
 
   //draw all the Kinect v2 frames
-  image(kinect2.getDepthImage(), 0, 0, 320, 240);
+  /*image(kinect2.getDepthImage(), 0, 0, 320, 240);
   image(kinect2.getIrImage(), 320, 0, 320, 240);
   image(kinect2.getVideoImage(), 320*2, 0, 320, 240);
   image(kinect2.getRegisteredImage(), 320*3, 0, 320, 240);
+  */
+  kinect2.getDepthImage();
+  kinect2.getIrImage();
+  kinect2.getVideoImage();
+  kinect2.getRegisteredImage();
   fill(255);
 
   //rotate the scene
@@ -112,6 +117,9 @@ void draw() {
     depthPositions.rewind();
     depthPositions.put(depthTmpBuffer);
     depthPositions.rewind();
+    if(keyPressed && key=='w'){
+      writeKinectFrame(depthPositions);
+    }
   }
    
 
@@ -133,6 +141,7 @@ void draw() {
   pgl.enableVertexAttribArray(colorLoc);
   
   int vertData = kinect2.depthWidth * kinect2.depthHeight;
+  println("YOOO",kinect2.depthWidth, kinect2.depthHeight);
 
   //vertex
   {
@@ -226,5 +235,9 @@ void keyPressed() {
   if (key=='d'){
     state = state==ADJUSTING?DRAW:ADJUSTING;
     println(state==ADJUSTING?"Adjusting":"Draw");
+  }
+  
+  if (key=='w'){
+    //writeKinectFrame(kinect2.getDepthBufferPositions());
   }
 }

@@ -6,10 +6,14 @@ import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 //import java.io.IOException;
 
-void writeKinectFrame(FloatBuffer depthPositions, boolean appendMode){
+int frameCt = 0;
+void writeKinectFrame(FloatBuffer depthPositions, boolean appendMode, int frameLimit){
 
+  if(frameCt++ < frameLimit)
+    return;
   String file = savePath("depth.data");
-  println(file);
+  println(frameCt);
+  
   
   try{
     DataOutputStream dos = new DataOutputStream(
@@ -18,6 +22,9 @@ void writeKinectFrame(FloatBuffer depthPositions, boolean appendMode){
     depthPositions.rewind();
     float v;
     float max=0, min=100000.0;
+    if (!appendMode){
+      dos.writeInt (frameCt);
+    }
     for( int i=0;i<depthPositions.capacity();++i){ //should by 512*424
       v = depthPositions.get(i);
       if ((v)>max){

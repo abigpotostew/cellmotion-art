@@ -52,14 +52,14 @@ void setup() {
 }
 
 ArrayList<float[]> readKinectFrameRawMulti(String absPath){
-  ArrayList<float[]> frames = new ArrayList<float[]>();
+  ArrayList<float[]> frames = new ArrayList<float[]>(); //<>//
   float f;
   
   try{
     DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(absPath)));
     
     while(in.available()>0){
-      int i=0;
+      int i=0; //<>//
       float[] raw = new float[512*424*3];
       f = in.readFloat();
       while (in.available()>0 && i<raw.length){
@@ -72,7 +72,7 @@ ArrayList<float[]> readKinectFrameRawMulti(String absPath){
     System.out.println("IOException : " + e);
     exit();
   }
-  return frames;
+  return frames; //<>//
 }
 
 FloatBuffer[] readKinectFrameMulti(String absPath){

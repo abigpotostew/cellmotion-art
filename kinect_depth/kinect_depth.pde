@@ -119,7 +119,7 @@ void draw() {
     depthPositions.put(depthTmpBuffer);
     depthPositions.rewind();
     if(keyPressed && key=='w'){
-      writeKinectFrame(depthPositions,hasWritten);
+      writeKinectFrame(depthPositions,hasWritten,250);
        hasWritten = true;
     }
   }
